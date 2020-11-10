@@ -13,7 +13,7 @@ def cli(ctx, report_id, config):
     conf.read(config)
 
     ctx.obj['api-key'] = conf['default']['api-key']
-    ctx.obj['report-id'] = report_id or conf['default']['default-reporting']
+    ctx.obj['report-ids'] = (report_id or conf['default']['default-reporting']).split(",")
 
 
 
@@ -28,25 +28,27 @@ def getreps(ctx):
 @cli.command()
 @click.pass_context
 def getrep(ctx):
-    print(requests.get(
-                "https://app.statuscake.com/API/PublicReporting",
-                headers={"API": ctx.obj['api-key'], "Username": "volodymyr"},
-                params={"id": ctx.obj['report-id']}
-            ).text)
+    for i in ctx.obj['report-ids']:
+        print(requests.get(
+                    "https://app.statuscake.com/API/PublicReporting",
+                    headers={"API": ctx.obj['api-key'], "Username": "volodymyr"},
+                    params={"id": i}
+                ).text)
 
 @cli.command()
 @click.argument("announce")
 @click.pass_context
 def postrep(ctx, announce):
-    r = requests.post(
-                "https://app.statuscake.com/API/PublicReporting/Update",
-                headers={"API": ctx.obj['api-key'], "Username": "volodymyr"},
-                data={
-                        "id": ctx.obj['report-id'],
-                        "announcement": announce,
-                    }
-            )
-    print(r, r.text)
+    for i in ctx.obj['report-ids']:
+        r = requests.post(
+                    "https://app.statuscake.com/API/PublicReporting/Update",
+                    headers={"API": ctx.obj['api-key'], "Username": "volodymyr"},
+                    data={
+                            "id": i,
+                            "announcement": announce,
+                        }
+                )
+        print(r, r.text)
 
 def main():
     cli(obj={})

@@ -15,6 +15,8 @@ def cli(ctx, report_id, config):
     ctx.obj['api-key'] = conf['default']['api-key']
     ctx.obj['report-ids'] = (report_id or conf['default']['default-reporting']).split(",")
 
+    print("got report ids", ctx.obj['report-ids'])
+
 
 
 @cli.command()
@@ -40,6 +42,7 @@ def getrep(ctx):
 @click.pass_context
 def postrep(ctx, announce):
     for i in ctx.obj['report-ids']:
+        print("posting to", i)
         r = requests.post(
                     "https://app.statuscake.com/API/PublicReporting/Update",
                     headers={"API": ctx.obj['api-key'], "Username": "volodymyr"},
